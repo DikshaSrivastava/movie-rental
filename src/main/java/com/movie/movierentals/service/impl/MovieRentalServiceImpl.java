@@ -1,18 +1,18 @@
 package com.movie.movierentals.service.impl;
 
-import com.movie.movierentals.model.Customer;
-import com.movie.movierentals.model.Movie;
-import com.movie.movierentals.model.MovieRental;
+import com.movie.movierentals.model.*;
 import com.movie.movierentals.service.MovieRentalService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class MovieRentalServiceImpl implements MovieRentalService {
 
-    public String getStatement(Customer customer) {
+    public RentalRecord getStatement(Customer customer) {
         Map<String, Movie> movies = new HashMap<>();
         movies.put("F001", new Movie("You've Got Mail", "regular"));
         movies.put("F002", new Movie("Matrix", "regular"));
@@ -21,7 +21,9 @@ public class MovieRentalServiceImpl implements MovieRentalService {
 
         double totalAmount = 0;
         int frequentEnterPoints = 0;
-        StringBuilder result = new StringBuilder("Rental Record for " + customer.getName() + "\n");
+        RentalRecord rentalRecord = new RentalRecord();
+        rentalRecord.setCustomerName(customer.getName());
+        List<MovieAmount> movieAmountList = new ArrayList<>();
         for (MovieRental r : customer.getRentals()) {
             double thisAmount = 0;
 
@@ -48,21 +50,15 @@ public class MovieRentalServiceImpl implements MovieRentalService {
             if (movies.get(r.getMovieId()).getCode().equals("new") && r.getDays() > 2) frequentEnterPoints++;
 
             //print figures for this rental
-            result.append("\t")
-                    .append(movies.get(r.getMovieId()).getTitle())
-                    .append("\t")
-                    .append(thisAmount)
-                    .append("\n");
+            movieAmountList.add(new MovieAmount(movies.get(r.getMovieId()).getTitle(),
+                    thisAmount));
+            rentalRecord.setMovieAmountList(movieAmountList);
             totalAmount = totalAmount + thisAmount;
         }
         // add footer lines
-        result.append("Amount owed is ")
-                .append(totalAmount)
-                .append("\n");
-        result.append("You earned ")
-                .append(frequentEnterPoints)
-                .append(" frequent points\n");
+        rentalRecord.setOwedAmount(totalAmount);
+        rentalRecord.setFrequentPoints(frequentEnterPoints);
 
-        return result.toString();
+        return rentalRecord;
     }
 }

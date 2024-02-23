@@ -32,7 +32,7 @@ public class MovieRentalControllerTest {
     public void calculateRentalRecordTest() throws Exception {
         String inputJson = "{\n\"name\": \"C. U. Stomer\",\n\"rentals\": [\n {\n\"movieId\": \"F001\",\n\"days\": 3\n},\n {\n\"movieId\": \"F002\",\n\"days\": 1\n}\n]\n}";
         String result = "Rental Record for C. U. Stomer\n\tYou've Got Mail\t3.5\n\tMatrix\t2.0\nAmount owed is 5.5\nYou earned 2 frequent points\n";
-        when(service.getStatement(Mockito.any(Customer.class))).thenReturn(result);
+        when(service.getStatement(Mockito.any(Customer.class))).thenReturn(null);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/rentalRecord")
                 .content(inputJson)
