@@ -10,6 +10,14 @@ public class MovieAmount {
         this.amount = amount;
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                "movieName='" + movieName + '\'' +
+                ", amount=" + amount +
+                '}';
+    }
+
     public String getMovieName() {
         return movieName;
     }

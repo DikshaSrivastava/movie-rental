@@ -19,6 +19,16 @@ public class RentalRecord {
         this.frequentPoints = frequentPoints;
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                "customerName='" + customerName + '\'' +
+                ", movieAmountList=" + movieAmountList +
+                ", owedAmount=" + owedAmount +
+                ", frequentPoints=" + frequentPoints +
+                '}';
+    }
+
     public String getCustomerName() {
         return customerName;
     }

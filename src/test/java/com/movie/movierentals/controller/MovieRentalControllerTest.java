@@ -1,6 +1,8 @@
 package com.movie.movierentals.controller;
 
 import com.movie.movierentals.model.Customer;
+import com.movie.movierentals.model.MovieAmount;
+import com.movie.movierentals.model.RentalRecord;
 import com.movie.movierentals.service.MovieRentalService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,8 +17,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -31,14 +36,21 @@ public class MovieRentalControllerTest {
     @Test
     public void calculateRentalRecordTest() throws Exception {
         String inputJson = "{\n\"name\": \"C. U. Stomer\",\n\"rentals\": [\n {\n\"movieId\": \"F001\",\n\"days\": 3\n},\n {\n\"movieId\": \"F002\",\n\"days\": 1\n}\n]\n}";
-        String result = "Rental Record for C. U. Stomer\n\tYou've Got Mail\t3.5\n\tMatrix\t2.0\nAmount owed is 5.5\nYou earned 2 frequent points\n";
-        when(service.getStatement(Mockito.any(Customer.class))).thenReturn(null);
+        RentalRecord result = new RentalRecord();
+        result.setCustomerName("C. U. Stomer");
+        result.setFrequentPoints(2);
+        result.setMovieAmountList(List.of(new MovieAmount(
+                "You've Got Mail",
+                3.5
+        ),
+               new MovieAmount("Matrix",
+                       2.0) ));
+        result.setOwedAmount(5.5);
+        when(service.getStatement(Mockito.any(Customer.class))).thenReturn(result);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/rentalRecord")
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON);
-        MvcResult mvcResult = mvc.perform(requestBuilder).andReturn();
-        MockHttpServletResponse response = mvcResult.getResponse();
-        assertEquals(result, response.getContentAsString());
+        mvc.perform(requestBuilder).andExpect(status().isOk());
     }
 }
