@@ -1,6 +1,8 @@
 package com.movie.movierentals.service.impl;
 
+import com.movie.movierentals.constants.MovieRentalsConstants;
 import com.movie.movierentals.entity.RentalRecordEntity;
+import com.movie.movierentals.exception.BadRequestException;
 import com.movie.movierentals.model.*;
 import com.movie.movierentals.repository.RentalRecordRepository;
 import com.movie.movierentals.service.MovieRentalService;
@@ -33,6 +35,9 @@ public class MovieRentalServiceImpl implements MovieRentalService {
         rentalRecord.setCustomerName(customer.getName());
         List<MovieAmount> movieAmountList = new ArrayList<>();
         for (MovieRental r : customer.getRentals()) {
+            if(r.getDays() < 0) {
+                throw new BadRequestException(MovieRentalsConstants.DAYS);
+            }
             double thisAmount = 0;
 
             // determine amount for each movie
@@ -44,6 +49,10 @@ public class MovieRentalServiceImpl implements MovieRentalService {
             }
             if (movies.get(r.getMovieId()).getCode().equals("new")) {
                 thisAmount = r.getDays() * 3;
+                // add bonus for a two day new release rental
+                if(r.getDays() > 2) {
+                    frequentEnterPoints++;
+                }
             }
             if (movies.get(r.getMovieId()).getCode().equals("childrens")) {
                 thisAmount = 1.5;
@@ -51,12 +60,8 @@ public class MovieRentalServiceImpl implements MovieRentalService {
                     thisAmount = ((r.getDays() - 3) * 1.5) + thisAmount;
                 }
             }
-
             //add frequent bonus points
             frequentEnterPoints++;
-            // add bonus for a two day new release rental
-            if (movies.get(r.getMovieId()).getCode().equals("new") && r.getDays() > 2) frequentEnterPoints++;
-
             //print figures for this rental
             movieAmountList.add(new MovieAmount(movies.get(r.getMovieId()).getTitle(),
                     thisAmount));

@@ -1,6 +1,7 @@
 package com.movie.movierentals.service;
 
 import com.movie.movierentals.entity.RentalRecordEntity;
+import com.movie.movierentals.exception.BadRequestException;
 import com.movie.movierentals.model.Customer;
 import com.movie.movierentals.model.MovieAmount;
 import com.movie.movierentals.model.MovieRental;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +47,24 @@ public class MovieRentalServiceTest {
         RentalRecord actual = service.getStatement(customer);
         assertEquals(expected.getCustomerName(), actual.getCustomerName());
         assertEquals(expected.getOwedAmount(), actual.getOwedAmount());
+    }
+
+    @Test
+    public void getStatementDaysLessThanZeroTest() {
+        RentalRecord expected = new RentalRecord();
+        expected.setCustomerName("C. U. Stomer");
+        expected.setFrequentPoints(2);
+        expected.setMovieAmountList(List.of(new MovieAmount(
+                        "You've Got Mail",
+                        3.5
+                ),
+                new MovieAmount("Matrix",
+                        2.0) ));
+        expected.setOwedAmount(5.5);
+        Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("F001", -3),
+                new MovieRental("F002", 1)));
+        when(repository.save(Mockito.any(RentalRecordEntity.class))).thenReturn(null);
+        assertThrows(BadRequestException.class, () -> {service.getStatement(customer);});
     }
 
     @Test
