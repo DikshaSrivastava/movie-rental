@@ -6,10 +6,7 @@ import com.movie.movierentals.service.MovieRentalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.ReactivePageableHandlerMethodArgumentResolver;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +24,10 @@ public class MovieRentalController {
     @GetMapping("/rentalRecords")
     public ResponseEntity<List<RentalRecord>> getRentalRecords(){
         return ResponseEntity.ok(service.getRentalRecords());
+    }
+
+    @GetMapping("/rentalRecord/{customerName}")
+    public ResponseEntity<RentalRecord> getRentalRecord(@PathVariable String customerName) {
+        return ResponseEntity.ok(service.getRentalRecord(customerName));
     }
 }

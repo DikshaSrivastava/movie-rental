@@ -96,4 +96,8 @@ public class MovieRentalServiceImpl implements MovieRentalService {
         rentalRecord.setFrequentPoints(rentalRecordEntity.getFrequentPoints());
         return rentalRecord;
     }
+
+    public RentalRecord getRentalRecord(String customerName) {
+        return convertEntityToModel(repository.findByCustomerName(customerName));
+    }
 }

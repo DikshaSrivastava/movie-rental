@@ -12,4 +12,6 @@ public interface MovieRentalService {
     RentalRecord getStatement(Customer customer);
 
     List<RentalRecord> getRentalRecords();
+
+    RentalRecord getRentalRecord(String customerName);
 }
