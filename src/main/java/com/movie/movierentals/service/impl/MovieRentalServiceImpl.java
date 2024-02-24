@@ -1,16 +1,24 @@
 package com.movie.movierentals.service.impl;
 
+import com.movie.movierentals.entity.RentalRecordEntity;
 import com.movie.movierentals.model.*;
+import com.movie.movierentals.repository.RentalRecordRepository;
 import com.movie.movierentals.service.MovieRentalService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieRentalServiceImpl implements MovieRentalService {
+
+    @Autowired
+    private RentalRecordRepository repository;
 
     public RentalRecord getStatement(Customer customer) {
         Map<String, Movie> movies = new HashMap<>();
@@ -52,13 +60,40 @@ public class MovieRentalServiceImpl implements MovieRentalService {
             //print figures for this rental
             movieAmountList.add(new MovieAmount(movies.get(r.getMovieId()).getTitle(),
                     thisAmount));
-            rentalRecord.setMovieAmountList(movieAmountList);
+
             totalAmount = totalAmount + thisAmount;
         }
         // add footer lines
         rentalRecord.setOwedAmount(totalAmount);
+        rentalRecord.setMovieAmountList(movieAmountList);
         rentalRecord.setFrequentPoints(frequentEnterPoints);
+        RentalRecordEntity rentalRecordEntity = convertModelToEntity(rentalRecord);
+        repository.save(rentalRecordEntity);
+        return rentalRecord;
+    }
 
+    private RentalRecordEntity convertModelToEntity(RentalRecord rentalRecord) {
+        RentalRecordEntity rentalRecordEntity = new RentalRecordEntity();
+        rentalRecordEntity.setCustomerName(rentalRecord.getCustomerName());
+        rentalRecordEntity.setMovieAmountList(rentalRecord.getMovieAmountList());
+        rentalRecordEntity.setOwedAmount(rentalRecord.getOwedAmount());
+        rentalRecordEntity.setFrequentPoints(rentalRecord.getFrequentPoints());
+        return rentalRecordEntity;
+    }
+
+    public List<RentalRecord> getRentalRecords(){
+        List<RentalRecordEntity> rentalRecordEntities = repository.findAll();
+        return rentalRecordEntities.stream()
+                .map(entity -> convertEntityToModel(entity))
+                .collect(Collectors.toList());
+    }
+
+    private RentalRecord convertEntityToModel(RentalRecordEntity rentalRecordEntity) {
+        RentalRecord rentalRecord = new RentalRecord();
+        rentalRecord.setCustomerName(rentalRecordEntity.getCustomerName());
+        rentalRecord.setMovieAmountList(rentalRecordEntity.getMovieAmountList());
+        rentalRecord.setOwedAmount(rentalRecordEntity.getOwedAmount());
+        rentalRecord.setFrequentPoints(rentalRecordEntity.getFrequentPoints());
         return rentalRecord;
     }
 }
