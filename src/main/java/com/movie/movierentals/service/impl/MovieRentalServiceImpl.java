@@ -28,12 +28,20 @@ public class MovieRentalServiceImpl implements MovieRentalService {
         movies.put("F002", new Movie("Matrix", "regular"));
         movies.put("F003", new Movie("Cars", "childrens"));
         movies.put("F004", new Movie("Fast & Furious X", "new"));
+        RentalRecordEntity previousRentalRecord = repository.findByCustomerName(customer.getName());
 
         double totalAmount = 0;
         int frequentEnterPoints = 0;
+        List<MovieAmount> movieAmountList = new ArrayList<>();
+        if(previousRentalRecord != null) {
+            totalAmount = previousRentalRecord.getOwedAmount();
+            frequentEnterPoints = previousRentalRecord.getFrequentPoints();
+            movieAmountList = previousRentalRecord.getMovieAmountList();
+            repository.delete(previousRentalRecord);
+        }
         RentalRecord rentalRecord = new RentalRecord();
         rentalRecord.setCustomerName(customer.getName());
-        List<MovieAmount> movieAmountList = new ArrayList<>();
+
         for (MovieRental r : customer.getRentals()) {
             if(r.getDays() < 0) {
                 throw new BadRequestException(MovieRentalsConstants.DAYS);

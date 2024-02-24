@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,6 +44,70 @@ public class MovieRentalServiceTest {
         expected.setOwedAmount(5.5);
         Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("F001", 3),
                 new MovieRental("F002", 1)));
+        when(repository.findByCustomerName(Mockito.anyString())).thenReturn(null);
+        doNothing().when(repository).delete(Mockito.any(RentalRecordEntity.class));
+        when(repository.save(Mockito.any(RentalRecordEntity.class))).thenReturn(null);
+        RentalRecord actual = service.getStatement(customer);
+        assertEquals(expected.getCustomerName(), actual.getCustomerName());
+        assertEquals(expected.getOwedAmount(), actual.getOwedAmount());
+    }
+
+    @Test
+    public void getStatementForNewAndChildrenMovieTest() {
+        RentalRecord expected = new RentalRecord();
+        expected.setCustomerName("C. U. Stomer");
+        expected.setFrequentPoints(3);
+        expected.setMovieAmountList(List.of(new MovieAmount(
+                        "Fast & Furious X",
+                        9.0
+                ),
+                new MovieAmount("Cars",
+                        3.0) ));
+        expected.setOwedAmount(12.0);
+        Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("F004", 3),
+                new MovieRental("F003", 4)));
+        when(repository.findByCustomerName(Mockito.anyString())).thenReturn(null);
+        doNothing().when(repository).delete(Mockito.any(RentalRecordEntity.class));
+        when(repository.save(Mockito.any(RentalRecordEntity.class))).thenReturn(null);
+        RentalRecord actual = service.getStatement(customer);
+        assertEquals(expected.getCustomerName(), actual.getCustomerName());
+        assertEquals(expected.getOwedAmount(), actual.getOwedAmount());
+        assertEquals(expected.getFrequentPoints(), actual.getFrequentPoints());
+    }
+
+    @Test
+    public void getStatementIfCustomerVisitedAgainTest() {
+        RentalRecord expected = new RentalRecord();
+        expected.setCustomerName("C. U. Stomer");
+        expected.setFrequentPoints(4);
+        expected.setMovieAmountList(List.of(new MovieAmount(
+                        "You've Got Mail",
+                        3.5
+                ),
+                new MovieAmount("Matrix",
+                        2.0),
+                new MovieAmount("Cars",
+                        1.5),
+                new MovieAmount("Fast & Furious X",
+                        3.0)));
+        expected.setOwedAmount(10.0);
+
+        RentalRecordEntity previousRentalRecord = new RentalRecordEntity();
+        previousRentalRecord.setCustomerName("C. U. Stomer");
+        previousRentalRecord.setFrequentPoints(2);
+        List<MovieAmount> movieAmountList = new ArrayList<>();
+        movieAmountList.add(new MovieAmount(
+                "You've Got Mail",
+                3.5
+        ));
+        movieAmountList.add(new MovieAmount("Matrix",
+                2.0));
+        previousRentalRecord.setMovieAmountList(movieAmountList);
+        previousRentalRecord.setOwedAmount(5.5);
+        Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("F003", 3),
+                new MovieRental("F004", 1)));
+        when(repository.findByCustomerName(Mockito.anyString())).thenReturn(previousRentalRecord);
+        doNothing().when(repository).delete(Mockito.any(RentalRecordEntity.class));
         when(repository.save(Mockito.any(RentalRecordEntity.class))).thenReturn(null);
         RentalRecord actual = service.getStatement(customer);
         assertEquals(expected.getCustomerName(), actual.getCustomerName());
@@ -63,6 +128,8 @@ public class MovieRentalServiceTest {
         expected.setOwedAmount(5.5);
         Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("F001", -3),
                 new MovieRental("F002", 1)));
+        when(repository.findByCustomerName(Mockito.anyString())).thenReturn(null);
+        doNothing().when(repository).delete(Mockito.any(RentalRecordEntity.class));
         when(repository.save(Mockito.any(RentalRecordEntity.class))).thenReturn(null);
         assertThrows(BadRequestException.class, () -> {service.getStatement(customer);});
     }
