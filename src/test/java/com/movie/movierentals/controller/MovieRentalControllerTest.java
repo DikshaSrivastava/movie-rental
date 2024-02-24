@@ -53,4 +53,43 @@ public class MovieRentalControllerTest {
                 .contentType(MediaType.APPLICATION_JSON);
         mvc.perform(requestBuilder).andExpect(status().isOk());
     }
+
+
+    @Test
+    public void getRentalRecordsTest() throws Exception {
+        RentalRecord result = new RentalRecord();
+        result.setCustomerName("C. U. Stomer");
+        result.setFrequentPoints(2);
+        result.setMovieAmountList(List.of(new MovieAmount(
+                        "You've Got Mail",
+                        3.5
+                ),
+                new MovieAmount("Matrix",
+                        2.0) ));
+        result.setOwedAmount(5.5);
+        when(service.getRentalRecords()).thenReturn(List.of(result));
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/rentalRecords")
+                .contentType(MediaType.APPLICATION_JSON);
+        mvc.perform(requestBuilder).andExpect(status().isOk());
+    }
+
+    @Test
+    public void getRentalRecordTest() throws Exception {
+        RentalRecord result = new RentalRecord();
+        result.setCustomerName("C. U. Stomer");
+        result.setFrequentPoints(2);
+        result.setMovieAmountList(List.of(new MovieAmount(
+                        "You've Got Mail",
+                        3.5
+                ),
+                new MovieAmount("Matrix",
+                        2.0) ));
+        result.setOwedAmount(5.5);
+        when(service.getRentalRecord(Mockito.anyString())).thenReturn(result);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/rentalRecord/{customerName}", "C. U. Stomer")
+                .contentType(MediaType.APPLICATION_JSON);
+        mvc.perform(requestBuilder).andExpect(status().isOk());
+    }
 }
