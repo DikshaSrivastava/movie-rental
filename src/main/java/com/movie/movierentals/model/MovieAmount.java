@@ -1,5 +1,9 @@
 package com.movie.movierentals.model;
 
+/**
+ * This model is returned in the response containing movie name and
+ * amount owed for each movie.
+ */
 public class MovieAmount {
 
     private String movieName;

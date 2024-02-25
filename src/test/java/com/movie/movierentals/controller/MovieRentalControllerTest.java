@@ -11,15 +11,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -86,7 +83,7 @@ public class MovieRentalControllerTest {
                 new MovieAmount("Matrix",
                         2.0) ));
         result.setOwedAmount(5.5);
-        when(service.getRentalRecord(Mockito.anyString())).thenReturn(result);
+        when(service.getRentalRecord(Mockito.anyString())).thenReturn(List.of(result));
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/rentalRecord/{customerName}", "C. U. Stomer")
                 .contentType(MediaType.APPLICATION_JSON);

@@ -13,12 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -44,8 +42,6 @@ public class MovieRentalServiceTest {
         expected.setOwedAmount(5.5);
         Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("F001", 3),
                 new MovieRental("F002", 1)));
-        when(repository.findByCustomerName(Mockito.anyString())).thenReturn(null);
-        doNothing().when(repository).delete(Mockito.any(RentalRecordEntity.class));
         when(repository.save(Mockito.any(RentalRecordEntity.class))).thenReturn(null);
         RentalRecord actual = service.getStatement(customer);
         assertEquals(expected.getCustomerName(), actual.getCustomerName());
@@ -66,8 +62,6 @@ public class MovieRentalServiceTest {
         expected.setOwedAmount(12.0);
         Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("F004", 3),
                 new MovieRental("F003", 4)));
-        when(repository.findByCustomerName(Mockito.anyString())).thenReturn(null);
-        doNothing().when(repository).delete(Mockito.any(RentalRecordEntity.class));
         when(repository.save(Mockito.any(RentalRecordEntity.class))).thenReturn(null);
         RentalRecord actual = service.getStatement(customer);
         assertEquals(expected.getCustomerName(), actual.getCustomerName());
@@ -80,34 +74,15 @@ public class MovieRentalServiceTest {
         RentalRecord expected = new RentalRecord();
         expected.setCustomerName("C. U. Stomer");
         expected.setFrequentPoints(4);
-        expected.setMovieAmountList(List.of(new MovieAmount(
-                        "You've Got Mail",
-                        3.5
-                ),
-                new MovieAmount("Matrix",
-                        2.0),
+        expected.setMovieAmountList(List.of(
                 new MovieAmount("Cars",
                         1.5),
                 new MovieAmount("Fast & Furious X",
                         3.0)));
-        expected.setOwedAmount(10.0);
+        expected.setOwedAmount(4.5);
 
-        RentalRecordEntity previousRentalRecord = new RentalRecordEntity();
-        previousRentalRecord.setCustomerName("C. U. Stomer");
-        previousRentalRecord.setFrequentPoints(2);
-        List<MovieAmount> movieAmountList = new ArrayList<>();
-        movieAmountList.add(new MovieAmount(
-                "You've Got Mail",
-                3.5
-        ));
-        movieAmountList.add(new MovieAmount("Matrix",
-                2.0));
-        previousRentalRecord.setMovieAmountList(movieAmountList);
-        previousRentalRecord.setOwedAmount(5.5);
         Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("F003", 3),
                 new MovieRental("F004", 1)));
-        when(repository.findByCustomerName(Mockito.anyString())).thenReturn(previousRentalRecord);
-        doNothing().when(repository).delete(Mockito.any(RentalRecordEntity.class));
         when(repository.save(Mockito.any(RentalRecordEntity.class))).thenReturn(null);
         RentalRecord actual = service.getStatement(customer);
         assertEquals(expected.getCustomerName(), actual.getCustomerName());
@@ -128,8 +103,6 @@ public class MovieRentalServiceTest {
         expected.setOwedAmount(5.5);
         Customer customer = new Customer("C. U. Stomer", List.of(new MovieRental("F001", -3),
                 new MovieRental("F002", 1)));
-        when(repository.findByCustomerName(Mockito.anyString())).thenReturn(null);
-        doNothing().when(repository).delete(Mockito.any(RentalRecordEntity.class));
         when(repository.save(Mockito.any(RentalRecordEntity.class))).thenReturn(null);
         assertThrows(BadRequestException.class, () -> {service.getStatement(customer);});
     }
@@ -184,9 +157,9 @@ public class MovieRentalServiceTest {
                 new MovieAmount("Matrix",
                         2.0) ));
         expected.setOwedAmount(5.5);
-        when(repository.findByCustomerName("C. U. Stomer")).thenReturn(rentalRecordEntity);
-        RentalRecord rentalRecord = service.getRentalRecord("C. U. Stomer");
-        assertEquals(expected.getCustomerName(), rentalRecord.getCustomerName());
-        assertEquals(expected.getOwedAmount(), rentalRecord.getOwedAmount());
+        when(repository.findByCustomerName("C. U. Stomer")).thenReturn(List.of(rentalRecordEntity));
+        List<RentalRecord> rentalRecord = service.getRentalRecord("C. U. Stomer");
+        assertEquals(expected.getCustomerName(), rentalRecord.get(0).getCustomerName());
+        assertEquals(expected.getOwedAmount(), rentalRecord.get(0).getOwedAmount());
     }
 }

@@ -2,6 +2,9 @@ package com.movie.movierentals.model;
 
 import java.util.List;
 
+/**
+ * This is the complete response body of the POST API to store movie rental information of customers.
+ */
 public class RentalRecord {
 
     private String customerName;

@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The interface for service class.
+ */
 @Service
 public interface MovieRentalService {
 
@@ -13,5 +16,5 @@ public interface MovieRentalService {
 
     List<RentalRecord> getRentalRecords();
 
-    RentalRecord getRentalRecord(String customerName);
+    List<RentalRecord> getRentalRecord(String customerName);
 }

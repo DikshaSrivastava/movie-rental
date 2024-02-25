@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+/***
+ * This is the movie rental information that is stored in the MongoDB database.
+ */
 @Document(collection = "rentalRecord")
 public class RentalRecordEntity {
 
