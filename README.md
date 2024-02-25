@@ -97,6 +97,7 @@ want to store the rental records in the DB which will be fetched later to view.
 2. The second API that can be used GET all API in which we can fetch rental records of multiple
 users.
    ![GETAll1!](GETAll1.PNG)
+
    ![GETAll2!](GETAll2.PNG)
 
 The above screenshots shows 3 data currently stored. 2 data are for customer C. U. Stomer
