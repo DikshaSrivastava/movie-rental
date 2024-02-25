@@ -132,3 +132,10 @@ is returned by the customer. If the customer returns the movies within the numbe
 they rented the movie then no penalty will be there else there can be logic of generating
 penalty if customers returned the movie late. Thus, we will have to stored the date-time
 when the movie was bought and when the movie was returned.
+4. Currently only 1 validation is handled i.e. when days is less than 0. The output 
+is as shown below:
+
+![validate!](validation.PNG)
+Further validations can be added like customer name should be mandatory, the movie 
+ID entered should be valid (If it isn't present in the map then a message should
+be shown that the movieId is invalid).
